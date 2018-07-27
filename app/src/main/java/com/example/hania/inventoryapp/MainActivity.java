@@ -54,13 +54,6 @@ public class MainActivity extends AppCompatActivity {
                 null);
 
         try {
-            String header = StoreEntry._ID + " - " +
-                    StoreEntry.COLUMN_PRODUCT_NAME + " - " +
-                    StoreEntry.COLUMN_PRICE + " - " +
-                    StoreEntry.COLUMN_QUANTITY + " - " +
-                    StoreEntry.COLUMN_SUPPLIER_NAME + " - " +
-                    StoreEntry.COLUMN_SUPPLIER_PHONE;
-
             int idColumnIndex = cursor.getColumnIndex(StoreEntry._ID);
             int prodNameColumnIndex = cursor.getColumnIndex(StoreEntry.COLUMN_PRODUCT_NAME);
             int priceColumnIndex = cursor.getColumnIndex(StoreEntry.COLUMN_PRICE);

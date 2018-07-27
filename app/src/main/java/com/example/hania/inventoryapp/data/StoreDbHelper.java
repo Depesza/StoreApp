@@ -7,7 +7,6 @@ import android.database.sqlite.SQLiteOpenHelper;
 import com.example.hania.inventoryapp.data.StoreContract.StoreEntry;
 
 public class StoreDbHelper extends SQLiteOpenHelper {
-    public static final String LOG_TAG = StoreDbHelper.class.getSimpleName();
 
     private static final String DATABASE_NAME = "store.db";
     private static final int DATABASE_VERSION = 1;
