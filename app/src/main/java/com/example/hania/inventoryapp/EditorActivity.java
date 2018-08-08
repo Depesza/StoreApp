@@ -18,6 +18,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
@@ -46,7 +47,6 @@ public class EditorActivity extends AppCompatActivity implements
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        Log.i("EditorAcitivity", "onCreate");
 
         setContentView(R.layout.activity_edit);
 
@@ -74,81 +74,102 @@ public class EditorActivity extends AppCompatActivity implements
         mQuantityEditText.setOnTouchListener(mTouchListener);
         mSupNameEditText.setOnTouchListener(mTouchListener);
         mSupPhoneEditText.setOnTouchListener(mTouchListener);
-        Log.i("EditorAcitivity", "onCreate EXIT");
+
+        Button minusButton = (Button) findViewById(R.id.minus_button);
+        Button plusButton = (Button) findViewById(R.id.plus_button);
+
+//        String quantityString = mQuantityEditText.getText().toString().trim();
+//
+//        if (quantityString.equals("")){
+//            mQuantityEditText.setText(String.valueOf(0));
+//        }
+//
+        minusButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(!TextUtils.isEmpty(mQuantityEditText.getText().toString().trim())) {
+                    int quantity = Integer.parseInt(mQuantityEditText.getText().toString().trim());
+                    if(quantity>=1){
+                        mQuantityEditText.setText(String.valueOf(quantity-1));
+                    }
+                }
+            }
+        });
+
+        plusButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(!TextUtils.isEmpty(mQuantityEditText.getText().toString().trim())){
+                    int quantity = Integer.parseInt(mQuantityEditText.getText().toString().trim());
+                    mQuantityEditText.setText(String.valueOf(quantity+1));
+                }
+            }
+        });
+
 
     }
 
     private void saveItem() {
-        Log.i("EditorAcitivity", "saveItem");
-
         String nameString = mNameEditText.getText().toString().trim();
         String priceString = mPriceEditText.getText().toString().trim();
         String quantityString = mQuantityEditText.getText().toString().trim();
         String supNameString = mSupNameEditText.getText().toString().trim();
         String supPhoneString = mSupPhoneEditText.getText().toString().trim();
 
-        if (mCurrentItemUri == null &&
-                TextUtils.isEmpty(nameString) && TextUtils.isEmpty(priceString) &&
-                TextUtils.isEmpty(quantityString) && TextUtils.isEmpty(supNameString) &&
-                TextUtils.isEmpty(supPhoneString)) {
-            return;
+        Log.v("co to ten empty?", "ehlo");
+
+        if (TextUtils.isEmpty(nameString) || TextUtils.isEmpty(priceString) ||
+                TextUtils.isEmpty(quantityString) || TextUtils.isEmpty(supNameString)) {
+            Toast.makeText(this, R.string.empty, Toast.LENGTH_SHORT).show();
         }
+        else {
 
-        ContentValues values = new ContentValues();
-        values.put(StoreEntry.COLUMN_PRODUCT_NAME, nameString);
-        values.put(StoreEntry.COLUMN_PRICE, priceString);
-        values.put(StoreEntry.COLUMN_QUANTITY, quantityString);
-        values.put(StoreEntry.COLUMN_SUPPLIER_NAME, supNameString);
+            ContentValues values = new ContentValues();
+            values.put(StoreEntry.COLUMN_PRODUCT_NAME, nameString);
+            values.put(StoreEntry.COLUMN_PRICE, priceString);
+            values.put(StoreEntry.COLUMN_QUANTITY, quantityString);
+            values.put(StoreEntry.COLUMN_SUPPLIER_NAME, supNameString);
+            values.put(StoreEntry.COLUMN_SUPPLIER_PHONE, supPhoneString);
 
-        String supPhone = "";
-        if (!TextUtils.isEmpty(supPhoneString)) {
-            supPhone = supPhoneString;
-        }
-        values.put(StoreEntry.COLUMN_SUPPLIER_PHONE, supPhone);
 
-        if (mCurrentItemUri == null) {
-            Uri newUri = getContentResolver().insert(StoreEntry.CONTENT_URI, values);
+            if (mCurrentItemUri == null) {
+                Uri newUri = getContentResolver().insert(StoreEntry.CONTENT_URI, values);
 
-            if (newUri == null) {
-                Toast.makeText(this, getString(R.string.editor_insert_item_failed),
-                        Toast.LENGTH_SHORT).show();
+                if (newUri == null) {
+                    Toast.makeText(this, getString(R.string.editor_insert_item_failed),
+                            Toast.LENGTH_SHORT).show();
+                } else {
+                    Toast.makeText(this, getString(R.string.editor_insert_item_successful),
+                            Toast.LENGTH_SHORT).show();
+                }
             } else {
-                Toast.makeText(this, getString(R.string.editor_insert_item_successful),
-                        Toast.LENGTH_SHORT).show();
-            }
-        } else {
-            int rowsAffected = getContentResolver().update(mCurrentItemUri, values, null, null);
+                int rowsAffected = getContentResolver().update(mCurrentItemUri, values, null, null);
 
-            if (rowsAffected == 0) {
-                Toast.makeText(this, getString(R.string.editor_update_item_failed),
-                        Toast.LENGTH_SHORT).show();
-            } else {
-                Toast.makeText(this, getString(R.string.editor_update_item_successful),
-                        Toast.LENGTH_SHORT).show();
+                if (rowsAffected == 0) {
+                    Toast.makeText(this, getString(R.string.editor_update_item_failed),
+                            Toast.LENGTH_SHORT).show();
+                } else {
+                    Toast.makeText(this, getString(R.string.editor_update_item_successful),
+                            Toast.LENGTH_SHORT).show();
+                }
             }
         }
-        Log.i("EditorAcitivity", "saveItem EXIT");
 
     }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        Log.i("EditorAcitivity", "onCreateOptionsMenu");
-
         getMenuInflater().inflate(R.menu.menu_editor, menu);
-        Log.i("EditorAcitivity", "onCreateOptionsMenu EXIT");
         return true;
     }
 
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
         super.onPrepareOptionsMenu(menu);
-        Log.i("EditorAcitivity", "onPrepareOptionsMenu");
         if (mCurrentItemUri == null) {
             MenuItem menuItem = menu.findItem(R.id.action_delete);
             menuItem.setVisible(false);
         }
-        Log.i("EditorAcitivity", "onPrepareOptionsMenu EXIT");
 
         return true;
 
@@ -156,39 +177,33 @@ public class EditorActivity extends AppCompatActivity implements
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        Log.i("EditorAcitivity", "onOptionsItemSelected");
 
-        // User clicked on a menu option in the app bar overflow menu
         switch (item.getItemId()) {
-            // Respond to a click on the "Save" menu option
             case R.id.action_save:
-                // Save pet to database
                 saveItem();
-                // Exit activity
                 finish();
                 return true;
-            // Respond to a click on the "Delete" menu option
+
             case R.id.action_delete:
-                // Pop up confirmation dialog for deletion
                 showDeleteConfirmationDialog();
                 return true;
-            // Respond to a click on the "Up" arrow button in the app bar
+
+            case R.id.action_call:
+                mSupPhoneEditText = (EditText) findViewById(R.id.edit_sup_phone);
+                String phoneNumber = mSupPhoneEditText.getText().toString();
+                callButton(phoneNumber);
+                return true;
+
             case android.R.id.home:
-                // If the pet hasn't changed, continue with navigating up to parent activity
-                // which is the {@link CatalogActivity}.
                 if (!mItemHasChanged) {
                     NavUtils.navigateUpFromSameTask(EditorActivity.this);
                     return true;
                 }
 
-                // Otherwise if there are unsaved changes, setup a dialog to warn the user.
-                // Create a click listener to handle the user confirming that
-                // changes should be discarded.
                 DialogInterface.OnClickListener discardButtonClickListener =
                         new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialogInterface, int i) {
-                                // User clicked "Discard" button, navigate to parent activity.
                                 NavUtils.navigateUpFromSameTask(EditorActivity.this);
                             }
                         };
@@ -201,7 +216,6 @@ public class EditorActivity extends AppCompatActivity implements
 
     @Override
     public void onBackPressed() {
-        Log.i("EditorAcitivity", "onBackPressed");
 
         if (!mItemHasChanged) {
             super.onBackPressed();
@@ -221,7 +235,6 @@ public class EditorActivity extends AppCompatActivity implements
 
     @Override
     public Loader<Cursor> onCreateLoader(int i, Bundle bundle) {
-        Log.i("EditorAcitivity", "onCreateLoader");
 
         String[] projection = {
                 StoreEntry._ID,
@@ -231,7 +244,6 @@ public class EditorActivity extends AppCompatActivity implements
                 StoreEntry.COLUMN_SUPPLIER_NAME,
                 StoreEntry.COLUMN_SUPPLIER_PHONE };
 
-        Log.i("EditorAcitivity", "onCreateLoader EXIT");
         return new CursorLoader(this,
                 mCurrentItemUri,
                 projection,
@@ -242,58 +254,46 @@ public class EditorActivity extends AppCompatActivity implements
 
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor cursor) {
-        Log.i("EditorAcitivity", "onLoadFinished");
 
-        // Bail early if the cursor is null or there is less than 1 row in the cursor
         if (cursor == null || cursor.getCount() < 1) {
             return;
         }
 
-        // Proceed with moving to the first row of the cursor and reading data from it
-        // (This should be the only row in the cursor)
         if (cursor.moveToFirst()) {
-            // Find the columns of pet attributes that we're interested in
             int nameColumnIndex = cursor.getColumnIndex(StoreEntry.COLUMN_PRODUCT_NAME);
             int priceColumnIndex = cursor.getColumnIndex(StoreEntry.COLUMN_PRICE);
             int quantityColumnIndex = cursor.getColumnIndex(StoreEntry.COLUMN_QUANTITY);
             int supNameColumnIndex = cursor.getColumnIndex(StoreEntry.COLUMN_SUPPLIER_NAME);
             int supPhoneColumnIndex = cursor.getColumnIndex(StoreEntry.COLUMN_SUPPLIER_PHONE);
 
-            // Extract out the value from the Cursor for the given column index
             String name = cursor.getString(nameColumnIndex);
             int price = cursor.getInt(priceColumnIndex);
             int quantity = cursor.getInt(quantityColumnIndex);
             String supName = cursor.getString(supNameColumnIndex);
-            String supPhone = cursor.getString(supPhoneColumnIndex);
+            int supPhone = cursor.getInt(supPhoneColumnIndex);
 
-            // Update the views on the screen with the values from the database
             mNameEditText.setText(name);
             mPriceEditText.setText(Integer.toString(price));
             mQuantityEditText.setText(Integer.toString(quantity));
             mSupNameEditText.setText(supName);
-            mSupPhoneEditText.setText(supPhone);
+            mSupPhoneEditText.setText(Integer.toString(supPhone));
         }
-        Log.i("EditorAcitivity", "onLoadFinished EXIT");
 
     }
 
     @Override
     public void onLoaderReset(Loader<Cursor> loader) {
-        Log.i("EditorAcitivity", "onLoaderReset");
 
-        // If the loader is invalidated, clear out all the data from the input fields.
         mNameEditText.setText("");
         mPriceEditText.setText("");
         mQuantityEditText.setText("");
         mSupNameEditText.setText("");
         mSupPhoneEditText.setText("");
-        Log.i("EditorAcitivity", "onLoaderReset EXIT");
 
     }
 
     private void showUnsavedChangesDialog(
             DialogInterface.OnClickListener discardButtonClickListener) {
-        Log.i("EditorAcitivity", "showUnsavedChangesDialog");
 
 
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
@@ -310,12 +310,10 @@ public class EditorActivity extends AppCompatActivity implements
 
         AlertDialog alertDialog = builder.create();
         alertDialog.show();
-        Log.i("EditorAcitivity", "showUnsavedChangesDialog EXIT");
 
     }
 
     private void showDeleteConfirmationDialog() {
-        Log.i("EditorAcitivity", "showDeleteConfirmationDialog");
 
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setMessage(R.string.delete_dialog_msg);
@@ -334,12 +332,10 @@ public class EditorActivity extends AppCompatActivity implements
 
         AlertDialog alertDialog = builder.create();
         alertDialog.show();
-        Log.i("EditorAcitivity", "showDeleteConfirmationDialog EXIT");
 
     }
 
     private void deleteItem() {
-        Log.i("EditorAcitivity", "deleteItem");
 
         if (mCurrentItemUri != null) {
             int rowsDeleted = getContentResolver().delete(mCurrentItemUri, null, null);
@@ -353,9 +349,13 @@ public class EditorActivity extends AppCompatActivity implements
             }
         }
 
-        // Close the activity
         finish();
-        Log.i("EditorAcitivity", "deleteItem EXIT");
 
+    }
+
+    private void callButton(String phoneNumber){
+        Intent callIntent = new Intent(Intent.ACTION_DIAL);
+        callIntent.setData(Uri.parse("tel:" + phoneNumber));
+        startActivity(callIntent);
     }
 }

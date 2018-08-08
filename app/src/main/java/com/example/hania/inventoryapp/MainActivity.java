@@ -21,7 +21,6 @@ import android.widget.ListView;
 
 
 import com.example.hania.inventoryapp.data.StoreContract.StoreEntry;
-import com.example.hania.inventoryapp.data.StoreDbHelper;
 
 public class MainActivity extends AppCompatActivity implements
         LoaderManager.LoaderCallbacks<Cursor>{
@@ -70,7 +69,7 @@ public class MainActivity extends AppCompatActivity implements
         // and Toto's pet attributes are the values.
         ContentValues values = new ContentValues();
         values.put(StoreEntry.COLUMN_PRODUCT_NAME, "Toto");
-        values.put(StoreEntry.COLUMN_SUPPLIER_PHONE, "Teeeeerrier");
+        values.put(StoreEntry.COLUMN_SUPPLIER_PHONE, 12345421);
         values.put(StoreEntry.COLUMN_SUPPLIER_NAME, "Terrier");
         values.put(StoreEntry.COLUMN_PRICE, 3444);
         values.put(StoreEntry.COLUMN_QUANTITY, 7);

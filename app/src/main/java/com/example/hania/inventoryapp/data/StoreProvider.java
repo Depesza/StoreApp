@@ -38,7 +38,6 @@ public class StoreProvider extends ContentProvider {
     @Override
     public Cursor query(Uri uri, String[] projection, String selection, String[] selectionArgs,
                         String sortOrder) {
-        Log.i("StoreProvider", "query");
 
         SQLiteDatabase database = mDbHelper.getReadableDatabase();
 
@@ -63,25 +62,29 @@ public class StoreProvider extends ContentProvider {
 
         cursor.setNotificationUri(getContext().getContentResolver(), uri);
 
-        Log.i("StoreProvider", "query EXIT");
-
         return cursor;
     }
 
     @Override
     public Uri insert(Uri uri, ContentValues contentValues) {
-        Log.i("StoreProvider", "insert");
+        Log.v("inser ", "jestem");
+
 
         final int match = sUriMatcher.match(uri);
         switch (match) {
             case ITEMS:
+                Log.v("inser ", "exit items");
+
                 return insertItem(uri, contentValues);
             default:
+                Log.v("inser ", "exit not supported");
+
                 throw new IllegalArgumentException("Insertion is not supported for " + uri);
         }
     }
 
     private Uri insertItem(Uri uri, ContentValues values) {
+        Log.v("inser item", "jestem");
         String name = values.getAsString(StoreEntry.COLUMN_PRODUCT_NAME);
         if (name == null) {
             throw new IllegalArgumentException("Item requires a name");
@@ -111,9 +114,7 @@ public class StoreProvider extends ContentProvider {
         }
 
         getContext().getContentResolver().notifyChange(uri, null);
-
-        // Return the new URI with the ID (of the newly inserted row) appended at the
-        Log.i("StoreProvider", "insert EXIT");
+        Log.v("inser item", "exit");
 
         return ContentUris.withAppendedId(uri, id);
     }
@@ -121,7 +122,6 @@ public class StoreProvider extends ContentProvider {
     @Override
     public int update(Uri uri, ContentValues contentValues, String selection,
                       String[] selectionArgs) {
-        Log.i("StoreProvider", "update");
 
         final int match = sUriMatcher.match(uri);
         switch (match) {
@@ -137,7 +137,6 @@ public class StoreProvider extends ContentProvider {
     }
 
     private int updateItem(Uri uri, ContentValues values, String selection, String[] selectionArgs) {
-        Log.i("StoreProvider", "updateItem");
 
         if (values.containsKey(StoreEntry.COLUMN_PRODUCT_NAME)) {
             String name = values.getAsString(StoreEntry.COLUMN_PRODUCT_NAME);
@@ -184,8 +183,6 @@ public class StoreProvider extends ContentProvider {
 
     @Override
     public int delete(Uri uri, String selection, String[] selectionArgs) {
-        Log.i("StoreProvider", "delete");
-
         SQLiteDatabase database = mDbHelper.getWritableDatabase();
 
         int rowsDeleted;
@@ -214,8 +211,6 @@ public class StoreProvider extends ContentProvider {
 
     @Override
     public String getType(Uri uri) {
-        Log.i("StoreProvider", "getType");
-
         final int match = sUriMatcher.match(uri);
         switch (match) {
             case ITEMS:

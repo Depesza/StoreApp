@@ -20,7 +20,7 @@ public class StoreDbHelper extends SQLiteOpenHelper {
                 + StoreEntry.COLUMN_PRICE + " INTEGER NOT NULL, "
                 + StoreEntry.COLUMN_QUANTITY + " INTEGER NOT NULL, "
                 + StoreEntry.COLUMN_SUPPLIER_NAME + " TEXT NOT NULL, "
-                + StoreEntry.COLUMN_SUPPLIER_PHONE + " TEXT); ";
+                + StoreEntry.COLUMN_SUPPLIER_PHONE + " INTEGER); ";
 
         db.execSQL(SQL_CREATE_THINGS_TABLE);
     }
