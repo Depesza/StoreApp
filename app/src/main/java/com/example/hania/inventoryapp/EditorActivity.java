@@ -26,7 +26,7 @@ import com.example.hania.inventoryapp.data.StoreContract.StoreEntry;
 
 
 public class EditorActivity extends AppCompatActivity implements
-        LoaderManager.LoaderCallbacks<Cursor>{
+        LoaderManager.LoaderCallbacks<Cursor> {
 
     private static final int EXISTING_ITEM_LOADER = 0;
     private Uri mCurrentItemUri;
@@ -78,19 +78,13 @@ public class EditorActivity extends AppCompatActivity implements
         Button minusButton = (Button) findViewById(R.id.minus_button);
         Button plusButton = (Button) findViewById(R.id.plus_button);
 
-//        String quantityString = mQuantityEditText.getText().toString().trim();
-//
-//        if (quantityString.equals("")){
-//            mQuantityEditText.setText(String.valueOf(0));
-//        }
-//
         minusButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(!TextUtils.isEmpty(mQuantityEditText.getText().toString().trim())) {
+                if (!TextUtils.isEmpty(mQuantityEditText.getText().toString().trim())) {
                     int quantity = Integer.parseInt(mQuantityEditText.getText().toString().trim());
-                    if(quantity>=1){
-                        mQuantityEditText.setText(String.valueOf(quantity-1));
+                    if (quantity >= 1) {
+                        mQuantityEditText.setText(String.valueOf(quantity - 1));
                     }
                 }
             }
@@ -99,9 +93,9 @@ public class EditorActivity extends AppCompatActivity implements
         plusButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(!TextUtils.isEmpty(mQuantityEditText.getText().toString().trim())){
+                if (!TextUtils.isEmpty(mQuantityEditText.getText().toString().trim())) {
                     int quantity = Integer.parseInt(mQuantityEditText.getText().toString().trim());
-                    mQuantityEditText.setText(String.valueOf(quantity+1));
+                    mQuantityEditText.setText(String.valueOf(quantity + 1));
                 }
             }
         });
@@ -116,13 +110,12 @@ public class EditorActivity extends AppCompatActivity implements
         String supNameString = mSupNameEditText.getText().toString().trim();
         String supPhoneString = mSupPhoneEditText.getText().toString().trim();
 
-        Log.v("co to ten empty?", "ehlo");
 
         if (TextUtils.isEmpty(nameString) || TextUtils.isEmpty(priceString) ||
-                TextUtils.isEmpty(quantityString) || TextUtils.isEmpty(supNameString)) {
+                TextUtils.isEmpty(quantityString) || TextUtils.isEmpty(supNameString) ||
+                TextUtils.isEmpty(supPhoneString)) {
             Toast.makeText(this, R.string.empty, Toast.LENGTH_SHORT).show();
-        }
-        else {
+        } else {
 
             ContentValues values = new ContentValues();
             values.put(StoreEntry.COLUMN_PRODUCT_NAME, nameString);
@@ -153,6 +146,7 @@ public class EditorActivity extends AppCompatActivity implements
                             Toast.LENGTH_SHORT).show();
                 }
             }
+            finish();
         }
 
     }
@@ -181,7 +175,6 @@ public class EditorActivity extends AppCompatActivity implements
         switch (item.getItemId()) {
             case R.id.action_save:
                 saveItem();
-                finish();
                 return true;
 
             case R.id.action_delete:
@@ -242,7 +235,7 @@ public class EditorActivity extends AppCompatActivity implements
                 StoreEntry.COLUMN_PRICE,
                 StoreEntry.COLUMN_QUANTITY,
                 StoreEntry.COLUMN_SUPPLIER_NAME,
-                StoreEntry.COLUMN_SUPPLIER_PHONE };
+                StoreEntry.COLUMN_SUPPLIER_PHONE};
 
         return new CursorLoader(this,
                 mCurrentItemUri,
@@ -353,9 +346,11 @@ public class EditorActivity extends AppCompatActivity implements
 
     }
 
-    private void callButton(String phoneNumber){
+    private void callButton(String phoneNumber) {
         Intent callIntent = new Intent(Intent.ACTION_DIAL);
         callIntent.setData(Uri.parse("tel:" + phoneNumber));
-        startActivity(callIntent);
+        if (callIntent.resolveActivity(getPackageManager()) != null) {
+            startActivity(callIntent);
+        }
     }
 }

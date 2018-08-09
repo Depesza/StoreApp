@@ -4,7 +4,7 @@ import android.content.ContentResolver;
 import android.net.Uri;
 import android.provider.BaseColumns;
 
-public class StoreContract {
+public final class StoreContract {
     private StoreContract() {}
     public static final String CONTENT_AUTHORITY = "com.example.hania.inventoryapp";
     public static final Uri BASE_CONTENT_URI = Uri.parse("content://" + CONTENT_AUTHORITY);
